@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Advanced Animated Calculator</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+background:black;
+overflow:hidden;
+}
+
+/* Falling Numbers Background */
+
+#bg{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+overflow:hidden;
+z-index:-1;
+}
+
+.number{
+position:absolute;
+color:lime;
+font-weight:bold;
+opacity:.6;
+animation:fall linear infinite;
+}
+
+@keyframes fall{
+
+0%{
+transform:translateY(-100px);
+opacity:1;
+}
+
+100%{
+transform:translateY(110vh);
+opacity:0;
+}
+
+}
+
+/* Calculator */
+
+.calculator{
+
+width:390px;
+padding:20px;
+border-radius:20px;
+
+background:rgba(30,30,30,.9);
+
+backdrop-filter:blur(10px);
+
+box-shadow:0 0 25px rgba(255,255,255,.15);
+
+z-index:10;
+
+}
+
+#display{
+
+width:100%;
+height:75px;
+
+font-size:30px;
+
+text-align:right;
+
+padding:15px;
+
+border:none;
+
+border-radius:10px;
+
+margin-bottom:20px;
+
+background:#333;
+
+color:white;
+
+outline:none;
+
+}
+
+.buttons{
+
+display:grid;
+
+grid-template-columns:repeat(5,1fr);
+
+gap:10px;
+
+}
+
+button{
+
+height:60px;
+
+font-size:20px;
+
+border:none;
+
+border-radius:10px;
+
+cursor:pointer;
+
+transition:.2s;
+
+}
+
+button:hover{
+
+transform:scale(1.05);
+
+}
+
+.num{
+background:#444;
+color:white;
+}
+
+.op{
+background:orange;
+color:white;
+}
+
+.special{
+background:#6c63ff;
+color:white;
+}
+
+.equal{
+background:green;
+color:white;
+}
+
+.clear{
+background:red;
+color:white;
+}
+
+/* History Page */
+
+.historyPage{
+
+position:fixed;
+
+top:0;
+
+right:-100%;
+
+width:350px;
+
+height:100vh;
+
+background:#1b1b1b;
+
+padding:20px;
+
+color:white;
+
+transition:.4s;
+
+overflow:auto;
+
+z-index:100;
+
+}
+
+.historyPage.show{
+
+right:0;
+
+}
+
+.top{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:20px;
+
+}
+
+.top button{
+
+width:50px;
+
+height:40px;
+
+background:red;
+
+color:white;
+
+}
+
+.historyItem{
+
+padding:12px;
+
+background:#333;
+
+margin-bottom:10px;
+
+border-radius:10px;
+
+}
+
+.light{
+
+background:#ddd;
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="bg"></div>
+
+<div class="calculator">
+
+<input id="display" readonly>
+
+<div class="buttons">
+
+<button class="clear" onclick="clearDisplay()">C</button>
+<button class="special" onclick="back()">⌫</button>
+<button class="special" onclick="theme()">☀</button>
+<button class="special" onclick="copyAns()">📋</button>
+<button class="special" onclick="openHistory()">📜</button>
+
+<button class="num" onclick="append('7')">7</button>
+<button class="num" onclick="append('8')">8</button>
+<button class="num" onclick="append('9')">9</button>
+<button class="op" onclick="append('/')">÷</button>
+<button class="special" onclick="sqrt()">√</button>
+
+<button class="num" onclick="append('4')">4</button>
+<button class="num" onclick="append('5')">5</button>
+<button class="num" onclick="append('6')">6</button>
+<button class="op" onclick="append('*')">×</button>
+<button class="special" onclick="square()">x²</button>
+
+<button class="num" onclick="append('1')">1</button>
+<button class="num" onclick="append('2')">2</button>
+<button class="num" onclick="append('3')">3</button>
+<button class="op" onclick="append('-')">−</button>
+<button class="special" onclick="cube()">x³</button>
+
+<button class="num" onclick="append('0')">0</button>
+<button class="num" onclick="append('.')">.</button>
+<button class="equal" onclick="calculate()">=</button>
+<button class="op" onclick="append('+')">+</button>
+<button class="special" onclick="factorial()">n!</button>
+
+</div>
+
+</div>
+
+<!-- History Panel -->
+
+<div id="historyPage" class="historyPage">
+
+<div class="top">
+
+<h2>History</h2>
+
+<button onclick="closeHistory()">X</button>
+
+</div>
+
+<div id="historyList"></div>
+
+</div>
+
+<script>
+
+let display =
+document.getElementById("display");
+
+function append(v){
+
+display.value += v;
+
+}
+
+function clearDisplay(){
+
+display.value="";
+
+}
+
+function back(){
+
+display.value =
+display.value.slice(0,-1);
+
+}
+
+function calculate(){
+
+try{
+
+let exp = display.value;
+
+let result = eval(exp);
+
+display.value = result;
+
+saveHistory(exp + " = " + result);
+
+}
+catch{
+
+display.value="Error";
+
+}
+
+}
+
+function sqrt(){
+
+display.value =
+Math.sqrt(eval(display.value));
+
+}
+
+function square(){
+
+display.value =
+Math.pow(eval(display.value),2);
+
+}
+
+function cube(){
+
+display.value =
+Math.pow(eval(display.value),3);
+
+}
+
+function factorial(){
+
+let n=parseInt(display.value);
+
+let fact=1;
+
+for(let i=1;i<=n;i++){
+
+fact*=i;
+
+}
+
+display.value=fact;
+
+}
+
+function copyAns(){
+
+navigator.clipboard
+.writeText(display.value);
+
+alert("Copied");
+
+}
+
+function theme(){
+
+document.body
+.classList.toggle("light");
+
+}
+
+function openHistory(){
+
+document
+.getElementById("historyPage")
+.classList.add("show");
+
+}
+
+function closeHistory(){
+
+document
+.getElementById("historyPage")
+.classList.remove("show");
+
+}
+
+function saveHistory(text){
+
+let arr =
+JSON.parse(
+localStorage.getItem("calc")
+)||[];
+
+arr.push(text);
+
+localStorage.setItem(
+"calc",
+JSON.stringify(arr)
+);
+
+loadHistory();
+
+}
+
+function loadHistory(){
+
+let box=
+document.getElementById(
+"historyList"
+);
+
+box.innerHTML="";
+
+let arr=
+JSON.parse(
+localStorage.getItem("calc")
+)||[];
+
+arr.reverse().forEach(item=>{
+
+box.innerHTML +=
+"<div class='historyItem'>"
++ item +
+"</div>";
+
+});
+
+}
+
+loadHistory();
+
+/* Falling Numbers */
+
+function createNumbers(){
+
+let num =
+document.createElement("div");
+
+num.className="number";
+
+num.innerText =
+Math.floor(Math.random()*10);
+
+num.style.left =
+Math.random()*100+"vw";
+
+num.style.fontSize =
+(Math.random()*25+15)+"px";
+
+num.style.animationDuration =
+(Math.random()*5+3)+"s";
+
+document
+.getElementById("bg")
+.appendChild(num);
+
+setTimeout(()=>{
+
+num.remove();
+
+},8000);
+
+}
+
+setInterval(createNumbers,150);
+
+/* Keyboard Support */
+
+document.addEventListener(
+"keydown",
+function(e){
+
+let k=e.key;
+
+if(
+!isNaN(k)
+||
+"+-*/.".includes(k)
+){
+
+display.value += k;
+
+}
+
+if(k==="Enter")
+calculate();
+
+if(k==="Backspace")
+back();
+
+if(k==="Escape")
+clearDisplay();
+
+});
+
+</script>
+
+</body>
+</html>
