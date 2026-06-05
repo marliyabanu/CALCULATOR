@@ -58,6 +58,10 @@ calculator/
 * Voice input calculator
 * Export history feature
 * Multi-theme support
+PAGE OUTPUT :
+<img width="1536" height="864" alt="image" src="https://github.com/user-attachments/assets/8de6a77d-d7dc-4b57-bc77-18260d45f5a2" />
+<img width="1536" height="864" alt="image" src="https://github.com/user-attachments/assets/a4360bc1-3bb7-461f-822e-75b577e31acf" />
+
 
 ## Developed By
 
